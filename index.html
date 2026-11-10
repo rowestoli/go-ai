@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go AI — play 5×5 Go against Monte Carlo search</title>
+    <meta name="description" content="Play 5×5 Go in your browser against five agents, from random play to Monte Carlo tree search guided by a neural network. Built by Rowe Stodolnic." />
+    <meta name="theme-color" content="#121614" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="back" href="https://rowestoli.netlify.app/work/go-ai">Rowe Stodolnic</a>
+      <a class="src" href="https://github.com/rowestoli/go-ai">Source on GitHub</a>
+    </header>
+
+    <main class="app">
+      <section class="intro">
+        <h1>Go AI</h1>
+        <p class="lede">
+          Play 5×5 Go against five computer opponents, from random moves up to Monte Carlo tree search guided by a
+          neural network I trained. Turn on <em>Show its thinking</em> to watch the search weigh every move.
+        </p>
+      </section>
+
+      <section class="play">
+        <div class="board-wrap">
+          <svg id="board" class="board" role="grid" aria-label="Go board"></svg>
+          <div class="banner" id="banner" hidden></div>
+        </div>
+
+        <aside class="panel">
+          <div class="status" id="status" aria-live="polite">Your move. You're Black.</div>
+
+          <div class="meter" id="meter" aria-label="AI's estimated chance of winning">
+            <div class="meter__label"><span>AI's chance of winning</span><span id="meter-value">–</span></div>
+            <div class="meter__track"><div class="meter__fill" id="meter-fill"></div></div>
+            <div class="meter__sub" id="sims">&nbsp;</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="pass" type="button">Pass</button>
+            <button class="btn btn--ghost" id="undo" type="button">Undo</button>
+            <button class="btn btn--ghost" id="new" type="button">New game</button>
+          </div>
+
+          <fieldset class="field">
+            <legend>Opponent</legend>
+            <div class="agents" id="agents"></div>
+            <p class="hint" id="agent-blurb"></p>
+          </fieldset>
+
+          <fieldset class="field" id="time-field">
+            <legend>Thinking time per move</legend>
+            <div class="seg" id="time">
+              <button type="button" data-ms="300">0.3s</button>
+              <button type="button" data-ms="1000" aria-pressed="true">1s</button>
+              <button type="button" data-ms="3000">3s</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>You play</legend>
+            <div class="seg" id="side">
+              <button type="button" data-side="1" aria-pressed="true">Black (first)</button>
+              <button type="button" data-side="2">White</button>
+            </div>
+          </fieldset>
+
+          <label class="toggle">
+            <input type="checkbox" id="heat" checked />
+            <span>Show its thinking</span>
+          </label>
+
+          <p class="score" id="score"></p>
+        </aside>
+      </section>
+
+      <section class="how">
+        <h2>How it works</h2>
+        <div class="how__grid">
+          <article>
+            <h3>The rules engine</h3>
+            <p>
+              A small TypeScript Go engine handles captures, suicide, ko and area scoring (komi 0.5 on 5×5). It's covered by
+              unit tests and fast enough to play tens of thousands of games a second.
+            </p>
+          </article>
+          <article>
+            <h3>Monte Carlo tree search</h3>
+            <p>
+              For each candidate move, the agent plays thousands of quick random games and keeps the moves that win most
+              often, balancing proven moves against unexplored ones. The heat map shows where those games went.
+            </p>
+          </article>
+          <article>
+            <h3>The value network</h3>
+            <p>
+              A small neural network (55 inputs, two hidden layers) trained on 15,000 positions judges games that run long,
+              so the search spends its time on more positions instead of finishing every game.
+            </p>
+          </article>
+          <article>
+            <h3>How the agents compare</h3>
+            <p>
+              Over 10 games each: Monte Carlo beat alpha-beta search 10–0, and the final agent beat plain Monte Carlo 7–3.
+              The search runs in a background thread, so the page stays smooth while it thinks.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/ui/main.ts"></script>
+  </body>
+</html>
